@@ -1,0 +1,30 @@
+.ChatInput {
+  width: 95%;
+  display: block;
+  margin: 20px auto 0;
+
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+  }
+
+  input {
+    padding: 12px 14px;
+    margin: 0;
+    font-size: 16px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 8px;
+    width: 100%;
+    box-sizing: border-box;
+    box-shadow: 0 4px 10px -5px rgba(0, 0, 0, 0.2);
+    outline: none;
+
+    &:focus {
+      border-color: #4a90e2;
+      box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.15);
+    }
+  }
+}

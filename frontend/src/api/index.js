@@ -10,7 +10,7 @@ let connect = cb => {
 
   socket.onmessage = msg => {
     console.log(msg);
-    cb(msg);
+    if (cb) cb(msg);
   };
 
   socket.onclose = event => {
@@ -24,7 +24,11 @@ let connect = cb => {
 
 let sendMsg = msg => {
   console.log("sending msg: ", msg);
-  socket.send(msg);
+  if (socket.readyState === WebSocket.OPEN) {
+    socket.send(msg);
+  } else {
+    console.log("Socket is not open yet");
+  }
 };
 
 export { connect, sendMsg };
