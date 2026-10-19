@@ -38,9 +38,17 @@ simple-chat-app/
 
 ## Prerequisites
 
-- Go 1.22 or newer
+- Go 1.26 or newer
 - Node.js 18+ and npm
 - A modern browser
+
+## Background
+This project started from this [tutorial](https://tutorialedge.net/projects/chat-system-in-go-and-react), which I used
+to learn Go's concurrency model (goroutines, channels, `select`). I have been extending it.
+
+## Changes I made
+- Fixed crash on websocket upgrades. THe handles kept going away with a `nil` connection and panicked; it now logs and returns.
+- Fixed chat freeze for everyone when one client disconnected badly. A failed write made the pool goroutine `return`, that blocked all the clients.
 
 ## Getting Started
 
@@ -90,5 +98,4 @@ If you want to extend the app:
 - improve UI styling and message layout
 
 ## License
-
 This project is for learning and local development purposes.

@@ -42,26 +42,31 @@ func (pool *Pool) Start() {
 		case client := <-pool.Register:
 			pool.Clients[client] = true
 			fmt.Println("Size of Connection Pool: ", len(pool.Clients))
-			for client, _ := range pool.Clients {
-				fmt.Println(client)
-				client.Conn.WriteJSON(Message{Type: 1, Body: "New User Joined..."})
-			}
-			break
+			pool.broadcast(Message{Type: 1, Body: "New User Joined..."})
+
 		case client := <-pool.Unregister:
-			delete(pool.Clients, client)
-			fmt.Println("Size of Connection Pool: ", len(pool.Clients))
-			for client, _ := range pool.Clients {
-				client.Conn.WriteJSON(Message{Type: 1, Body: "User Disconnected..."})
+			if _, ok := pool.Clients[client]; ok {
+				delete(pool.Clients, client)
+				fmt.Println("Size of Connection Pool: ", len(pool.Clients))
+				pool.broadcast(Message{Type: 1, Body: "User Disconnected..."})
 			}
-			break
+
 		case message := <-pool.Broadcast:
 			fmt.Println("Sending message to all clients in Pool")
-			for client, _ := range pool.Clients {
-				if err := client.Conn.WriteJSON(message); err != nil {
-					fmt.Println(err)
-					return
-				}
-			}
+			pool.broadcast(message)
+		}
+	}
+}
+
+// broadcast sends msg to every client. A client whose connection fails is
+// removed and closed, and delivery continues to everyone else.
+
+func (pool *Pool) broadcast(msg Message) {
+	for c := range pool.Clients {
+		if err := c.Conn.WriteJSON(msg); err != nil {
+			log.Println("write failed, removing client:", err)
+			delete(pool.Clients, c) // deleting during range is safe in Go
+			c.Conn.Close()
 		}
 	}
 }

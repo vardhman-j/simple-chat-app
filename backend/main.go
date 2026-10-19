@@ -2,16 +2,18 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
-	"github.com/TutorialEdge/realtime-chat-go-react/pkg/websocket"
+	"github.com/vardhman-j/simple-chat-app/backend/pkg/websocket"
 )
 
 func serveWs(pool *websocket.Pool, w http.ResponseWriter, r *http.Request) {
 	fmt.Println("WebSocket Endpoint Hit")
 	conn, err := websocket.Upgrade(w, r)
 	if err != nil {
-		fmt.Fprintf(w, "%+v\n", err)
+		log.Println("websocket upgrade failed: ", err)
+		return;
 	}
 
 	client := &websocket.Client{
@@ -35,5 +37,5 @@ func setupRoutes() {
 func main() {
 	fmt.Println("Distributed Chat App v0.01")
 	setupRoutes()
-	http.ListenAndServe(":8080", nil)
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
